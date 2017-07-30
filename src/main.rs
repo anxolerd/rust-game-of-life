@@ -20,7 +20,7 @@ mod gol_view;
 
 fn main() {
     let opengl = OpenGL::V3_2;
-    let settings = WindowSettings::new("Game of Life", [512; 2])
+    let settings = WindowSettings::new("Game of Life", [652; 2])
         .opengl(opengl)
         .exit_on_esc(true);
     let mut window: GlutinWindow = settings.build()

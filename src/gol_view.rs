@@ -15,7 +15,6 @@ pub struct GoLViewSettings {
     pub border_radius: f64,
 
     pub alive_cell_color: Color,
-    pub dead_cell_color: Color,
 }
 
 
@@ -23,12 +22,11 @@ impl GoLViewSettings {
     pub fn new() -> GoLViewSettings {
         return GoLViewSettings {
             position: [6.0; 2],
-            size: 500.0,
-            bg_color: [0.8, 0.8, 1.0, 1.0],
-            border_color: [0.2, 0.0, 0.0, 1.0],
-            border_radius: 1.0,
+            size: 640.0,
+            bg_color: [1.0; 4],
+            border_color: [0.0, 0.0, 1.0, 1.0],
+            border_radius: 0.5,
             alive_cell_color: [0.0, 0.0, 0.0, 1.0],
-            dead_cell_color: [1.0, 1.0, 1.0, 1.0],
         };
     }
 }
@@ -59,21 +57,14 @@ impl GoLView {
         let cell_size = settings.size / controller.world.size as f64;
 
         let alive_cell_rect = Rectangle::new(settings.alive_cell_color);
-        let dead_cell_rect = Rectangle::new(settings.dead_cell_color);
         for i in 0..controller.world.size {
             for j in 0..controller.world.size {
                 let cell_rect = [settings.position[0] + i as f64 * cell_size,
                                  settings.position[1] + j as f64 * cell_size,
                                  cell_size, cell_size];
-                match controller.world.get([i, j]) {
-                    true => {
-                        alive_cell_rect.draw(cell_rect, &c.draw_state,
-                                             c.transform, g);
-                    },
-                    false => { 
-                        dead_cell_rect.draw(cell_rect, &c.draw_state,
-                                            c.transform, g);
-                    },
+                if controller.world.get([i, j]) {
+                    alive_cell_rect.draw(cell_rect, &c.draw_state,
+                                         c.transform, g);
                 }
             }
         }
