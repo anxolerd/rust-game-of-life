@@ -35,7 +35,8 @@ fn main() {
     let mut gl = GlGraphics::new(opengl);
 
     while let Some(e) = events.next(&mut window) {
-        gol_controller.event(&e);
+        gol_controller.event(gol_view.settings.position, 
+                             gol_view.settings.size, &e);
         if let Some(args) = e.render_args() {
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};

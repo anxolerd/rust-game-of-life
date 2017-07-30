@@ -31,13 +31,12 @@ impl GoLController {
         }
     }
 
-    pub fn event<E: GenericEvent>(&mut self, e: &E) {
-        use piston::input::{Button, Key};
+    pub fn event<E: GenericEvent>(&mut self, pos:[f64;2], size: f64, e: &E) {
+        use piston::input::{Button, MouseButton, Key};
         if self.is_playing {
             if let Some(args) = e.update_args() {
                 self.time = self.time + args.dt;
                 if self.interval <= self.time {
-                    println!("Timer event");
                     self.time = 0.0;
                     self.world.next_generation();
                 }
@@ -48,9 +47,24 @@ impl GoLController {
             self.cursor_pos = pos;
         }
 
+        if !self.is_playing {
+           if let Some(Button::Mouse(MouseButton::Left)) = e.press_args() {
+                let x = self.cursor_pos[0] - pos[0];
+                let y = self.cursor_pos[1] - pos[1];
+
+                // Are we inside board?
+                if x >= 0.0 && x < size && y >= 0.0 && y < size {
+                    let cell_x = (x / size * self.world.size as f64) as usize;
+                    let cell_y = (y / size * self.world.size as f64) as usize;
+                    let ind = [cell_x, cell_y];
+                    let cell_value = self.world.get(ind);
+                    self.world.set(ind, !cell_value);
+                }
+            }
+        }
+
         if let Some(Button::Keyboard(key)) = e.press_args() {
             if key == Key::Space { self.is_playing = !self.is_playing; }
-            println!("Is Playing? {}", self.is_playing);
         }
     }
 }
