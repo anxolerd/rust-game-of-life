@@ -11,9 +11,11 @@ use opengl_graphics::{OpenGL, GlGraphics};
 
 use gol_world::World;
 use gol_controller::GoLController;
+use gol_view::{GoLView, GoLViewSettings};
 
 mod gol_world;
 mod gol_controller;
+mod gol_view;
 
 
 fn main() {
@@ -26,6 +28,8 @@ fn main() {
 
     let gol_world = World::new();
     let mut gol_controller = GoLController::new(gol_world);
+    let gol_view_settings = GoLViewSettings::new();
+    let gol_view = GoLView::new(gol_view_settings);
 
     let mut events = Events::new(EventSettings::new().lazy(false));
     let mut gl = GlGraphics::new(opengl);
@@ -37,6 +41,7 @@ fn main() {
                 use graphics::{clear};
 
                 clear([1.0; 4], g);
+                gol_view.draw(&gol_controller, &c, g);
             });
         }
     }
