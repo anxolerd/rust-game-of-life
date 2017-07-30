@@ -30,6 +30,7 @@ impl World {
     /// Set value to cell
     pub fn set(&mut self, ind: [usize; 2], val: bool) {
         self.cells[ind[0]][ind[1]] = val;
+        self.cells_to_check.insert(ind);
         for &coords in self.neighbours(ind[0], ind[1]).iter() {
             self.cells_to_check.insert(coords);
         }
