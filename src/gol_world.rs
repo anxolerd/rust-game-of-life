@@ -57,14 +57,16 @@ impl World {
     }
 
     fn count_alive_neighbours(&self, x:usize, y:usize) -> usize {
-        return match (x, y) {
-            (0,    0   ) => vec![[x, y+1], [x+1, y], [x+1, y+1]],
-            (0, _) => vec![[x, y-1], [x, y+1], [x+1, y-1], [x+1, y], [x+1, y+1]],
-            (_, 0) => vec![[x-1, y], [x-1, y+1], [x, y+1], [x+1, y], [x+1, y+1]],
-            _ => vec![[x-1, y-1], [x-1, y], [x-1, y+1],
-                      [x,   y-1],           [x,   y+1],
-                      [x+1, y-1], [x+1, y], [x+1, y+1]]
-        }.iter()
+        return [
+            [(SIZE + x - 1) % SIZE, (SIZE + y - 1) % SIZE],
+            [(SIZE + x - 1) % SIZE, y              % SIZE],
+            [(SIZE + x - 1) % SIZE, (y + 1)        % SIZE],
+            [x,                     (SIZE + y - 1) % SIZE],
+            [x,                     (y + 1)        % SIZE],
+            [(x + 1)        % SIZE, (SIZE + y - 1) % SIZE],
+            [(x + 1)        % SIZE, y              % SIZE],
+            [(x + 1)        % SIZE, (y + 1)        % SIZE],
+        ].iter()
          .filter(|&ind| ind[0] < SIZE && ind[1] < SIZE)
          .filter(|&ind| self.get(*ind))
          .count();
