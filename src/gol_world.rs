@@ -1,5 +1,5 @@
 //! Game of life world logic
-
+use std::collections::HashSet;
 
 /// Size of the GoL world
 const SIZE: usize = 64;
@@ -12,8 +12,8 @@ pub struct World {
     pub cells: [[bool; SIZE]; SIZE as usize],
     pub size: usize,
 
-    /// buffer to calculate next state
-    buf: [[bool; SIZE]; SIZE as usize],
+    /// cells to check when calculating next generation
+    cells_to_check: HashSet<[usize; 2]>,
 }
 
 
@@ -23,13 +23,16 @@ impl World {
         return World {
             cells: [[false; SIZE]; SIZE],
             size: SIZE,
-            buf: [[false; SIZE]; SIZE],
+            cells_to_check: HashSet::new(),
         }
     }
 
     /// Set value to cell
     pub fn set(&mut self, ind: [usize; 2], val: bool) {
         self.cells[ind[0]][ind[1]] = val;
+        for &coords in self.neighbours(ind[0], ind[1]).iter() {
+            self.cells_to_check.insert(coords);
+        }
     }
 
     /// Get value from cell
@@ -38,25 +41,30 @@ impl World {
     }
 
     pub fn next_generation(&mut self) {
-        for x in 0..SIZE {
-            for y in 0..SIZE {
-                let alive_neighbours = self.count_alive_neighbours(x, y);
-                let is_alive = match (self.get([x, y]), alive_neighbours) {
-                    (true, 2) => true,
-                    (_,    3) => true,
-                    _ => false,
-                };
-                self.buf[x][y] = is_alive;
+        let mut new_values: Vec<([usize; 2], bool)> = Vec::new();
+        let mut cells_to_check = self.cells_to_check.clone();
+        self.cells_to_check.clear();
+        for coords in cells_to_check.drain() {
+            let neighbours = self.neighbours(coords[0], coords[1]);
+            let alive_count = neighbours.iter()
+                .filter(|&ind| self.get(*ind))
+                .count();
+            let old_value = self.get(coords);
+            let new_value = match (old_value, alive_count) {
+                (true, 2) => true,
+                (_,    3) => true,
+                _ => false,
+            };
+            if new_value != old_value {
+                new_values.push((coords, new_value));
             }
         }
-        for x in 0..SIZE {
-            for y in 0..SIZE {
-                self.cells[x][y] = self.buf[x][y];
-            }
+        for &(coords, val) in new_values.iter() {
+            self.set([coords[0], coords[1]], val);
         }
     }
 
-    fn count_alive_neighbours(&self, x:usize, y:usize) -> usize {
+    fn neighbours(&self, x:usize, y:usize) -> Vec<[usize; 2]> {
         return [
             [(SIZE + x - 1) % SIZE, (SIZE + y - 1) % SIZE],
             [(SIZE + x - 1) % SIZE, y              % SIZE],
@@ -68,7 +76,7 @@ impl World {
             [(x + 1)        % SIZE, (y + 1)        % SIZE],
         ].iter()
          .filter(|&ind| ind[0] < SIZE && ind[1] < SIZE)
-         .filter(|&ind| self.get(*ind))
-         .count();
+         .map(|&ind| ind)
+         .collect();
     }
 }
