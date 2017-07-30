@@ -10,8 +10,10 @@ use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, GlGraphics};
 
 use gol_world::World;
+use gol_controller::GoLController;
 
 mod gol_world;
+mod gol_controller;
 
 
 fn main() {
@@ -23,11 +25,13 @@ fn main() {
         .expect("Could not create window");
 
     let gol_world = World::new();
+    let mut gol_controller = GoLController::new(gol_world);
 
     let mut events = Events::new(EventSettings::new().lazy(false));
     let mut gl = GlGraphics::new(opengl);
 
     while let Some(e) = events.next(&mut window) {
+        gol_controller.event(&e);
         if let Some(args) = e.render_args() {
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
