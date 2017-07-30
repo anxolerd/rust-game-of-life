@@ -9,6 +9,10 @@ use piston::input::RenderEvent;
 use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, GlGraphics};
 
+use gol_world::World;
+
+mod gol_world;
+
 
 fn main() {
     let opengl = OpenGL::V3_2;
@@ -17,6 +21,8 @@ fn main() {
         .exit_on_esc(true);
     let mut window: GlutinWindow = settings.build()
         .expect("Could not create window");
+
+    let gol_world = World::new();
 
     let mut events = Events::new(EventSettings::new().lazy(false));
     let mut gl = GlGraphics::new(opengl);
