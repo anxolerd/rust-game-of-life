@@ -1,4 +1,4 @@
-//! GoL World View.
+//! Game of Life World View.
 
 use graphics::types::Color;
 use graphics::{Context, Graphics};
@@ -20,14 +20,14 @@ pub struct GoLViewSettings {
 
 impl GoLViewSettings {
     pub fn new() -> GoLViewSettings {
-        return GoLViewSettings {
+        GoLViewSettings {
             position: [6.0; 2],
             size: 640.0,
             bg_color: [1.0; 4],
             border_color: [0.0, 0.0, 1.0, 1.0],
             border_radius: 0.5,
             alive_cell_color: [0.0, 0.0, 0.0, 1.0],
-        };
+        }
     }
 }
 
@@ -39,14 +39,14 @@ pub struct GoLView {
 
 impl GoLView {
     pub fn new(settings: GoLViewSettings) -> GoLView {
-        return GoLView { settings: settings };
+        GoLView { settings: settings }
     }
 
     pub fn draw<G: Graphics>(&self, controller: &GoLController, 
                              c: &Context, g: &mut G) {
         use graphics::{Line, Rectangle};
 
-        let ref settings = self.settings;
+        let settings = &self.settings;
         let world_rect = [settings.position[0], settings.position[1],
                           settings.size, settings.size];
         // Background
