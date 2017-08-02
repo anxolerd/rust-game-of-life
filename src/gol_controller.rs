@@ -21,7 +21,7 @@ pub struct GoLController {
 
 impl GoLController {
     pub fn new(world: World) -> GoLController {
-        return GoLController {
+        GoLController {
             world: world,
             is_playing: false,
             cursor_pos: [0.0; 2],
@@ -35,7 +35,7 @@ impl GoLController {
         use piston::input::{Button, MouseButton, Key};
         if self.is_playing {
             if let Some(args) = e.update_args() {
-                self.time = self.time + args.dt;
+                self.time += args.dt;
                 if self.interval <= self.time {
                     self.time = 0.0;
                     self.world.next_generation();

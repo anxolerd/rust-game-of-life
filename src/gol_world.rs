@@ -1,10 +1,10 @@
 //! Game of life world logic
 use std::collections::HashSet;
 
-/// Size of the GoL world
+/// Size of the Game of Life world
 const SIZE: usize = 64;
 
-/// Stores GoL world information
+/// Stores Game of Life world information
 pub struct World {
     /// Stores the state of the cells.
     /// `false` means that cell is dead
@@ -20,7 +20,7 @@ pub struct World {
 impl World {
     /// Creates a new world
     pub fn new() -> World {
-        return World {
+        World {
             cells: [[false; SIZE]; SIZE],
             size: SIZE,
             cells_to_check: HashSet::new(),
@@ -31,14 +31,14 @@ impl World {
     pub fn set(&mut self, ind: [usize; 2], val: bool) {
         self.cells[ind[0]][ind[1]] = val;
         self.cells_to_check.insert(ind);
-        for &coords in self.neighbours(ind[0], ind[1]).iter() {
+        for &coords in &self.neighbours(ind[0], ind[1]) {
             self.cells_to_check.insert(coords);
         }
     }
 
     /// Get value from cell
     pub fn get(&self, ind: [usize; 2]) -> bool {
-        return self.cells[ind[0]][ind[1]];
+        self.cells[ind[0]][ind[1]]
     }
 
     pub fn next_generation(&mut self) {
@@ -52,7 +52,7 @@ impl World {
                 .count();
             let old_value = self.get(coords);
             let new_value = match (old_value, alive_count) {
-                (true, 2) => true,
+                (true, 2) |
                 (_,    3) => true,
                 _ => false,
             };
@@ -60,13 +60,13 @@ impl World {
                 new_values.push((coords, new_value));
             }
         }
-        for &(coords, val) in new_values.iter() {
+        for &(coords, val) in &new_values {
             self.set([coords[0], coords[1]], val);
         }
     }
 
     fn neighbours(&self, x:usize, y:usize) -> Vec<[usize; 2]> {
-        return [
+        [
             [(SIZE + x - 1) % SIZE, (SIZE + y - 1) % SIZE],
             [(SIZE + x - 1) % SIZE, y              % SIZE],
             [(SIZE + x - 1) % SIZE, (y + 1)        % SIZE],
@@ -77,7 +77,7 @@ impl World {
             [(x + 1)        % SIZE, (y + 1)        % SIZE],
         ].iter()
          .filter(|&ind| ind[0] < SIZE && ind[1] < SIZE)
-         .map(|&ind| ind)
-         .collect();
+         .cloned()
+         .collect()
     }
 }
